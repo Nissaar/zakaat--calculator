@@ -382,6 +382,9 @@ export default function App() {
               <p>
                 Additionally, <strong>you are responsible for the accuracy of the gold and silver prices</strong> you input. Please verify the current market rates with your local jewellery store or a reliable financial source before finalizing your calculation.
               </p>
+              <p>
+                <strong>Please be aware that Zakat is also applicable to other types of assets (such as business inventory, agricultural produce, livestock, etc.). This calculator focuses exclusively on gold, silver, and cash savings as they are the most common. For comprehensive guidance on all your Zakatable assets, please consult with your local scholars or mosque.</strong>
+              </p>
             </div>
             <button
               onClick={() => setShowDisclaimer(false)}
