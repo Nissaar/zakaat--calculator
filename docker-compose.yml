@@ -1,0 +1,34 @@
+version: '3.8'
+
+services:
+  zakat-calculator:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: zakat-calculator
+    restart: unless-stopped
+    networks:
+      # Replace 'traefik-public' with the actual name of your Traefik network
+      - traefik-public
+    labels:
+      - "traefik.enable=true"
+      
+      # Routing
+      # Replace 'zakat.yourdomain.com' with your actual domain
+      - "traefik.http.routers.zakat-calculator.rule=Host(`zakat.yourdomain.com`)"
+      
+      # Entrypoints (assuming 'websecure' is your HTTPS entrypoint in Traefik)
+      - "traefik.http.routers.zakat-calculator.entrypoints=websecure"
+      
+      # TLS Configuration (assuming you use Let's Encrypt or similar)
+      - "traefik.http.routers.zakat-calculator.tls=true"
+      # Replace 'myresolver' with your actual Traefik certificate resolver name (e.g., 'letsencrypt')
+      - "traefik.http.routers.zakat-calculator.tls.certresolver=myresolver"
+      
+      # Service Port mapping
+      # Nginx inside the container serves on port 80
+      - "traefik.http.services.zakat-calculator.loadbalancer.server.port=80"
+
+networks:
+  traefik-public:
+    external: true
