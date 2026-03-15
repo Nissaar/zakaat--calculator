@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Calculator, Coins, CircleDollarSign, Info, Scale, Wallet, Gem, AlertTriangle } from 'lucide-react';
+import { Calculator, Coins, CircleDollarSign, Info, Scale, Wallet, Gem, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
 
 const goldPurities = {
   '24k': 1,
@@ -17,6 +17,8 @@ export default function App() {
   const [silverPrice, setSilverPrice] = useState<string>('');
   const [moneySaved, setMoneySaved] = useState<string>('');
   const [showDisclaimer, setShowDisclaimer] = useState<boolean>(true);
+  const [isGoldCollapsed, setIsGoldCollapsed] = useState<boolean>(true);
+  const [isMoneyCollapsed, setIsMoneyCollapsed] = useState<boolean>(true);
 
   const handleGoldChange = (purity: string, value: string) => {
     setGoldGrams((prev) => ({ ...prev, [purity]: value }));
@@ -61,123 +63,145 @@ export default function App() {
           
           {/* Gold Section */}
           <section className="bg-white rounded-2xl p-6 shadow-sm border border-stone-200">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-amber-100 text-amber-700 rounded-lg">
-                <Gem className="w-5 h-5" />
-              </div>
-              <h2 className="text-xl font-medium">Gold Assets</h2>
-            </div>
-
-            <div className="mb-6">
-              <label className="block text-sm font-medium text-stone-700 mb-2">
-                24k Gold Price (per gram)
-              </label>
-              <div className="relative">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <span className="text-stone-400 sm:text-sm">$</span>
+            <button 
+              onClick={() => setIsGoldCollapsed(!isGoldCollapsed)}
+              className="w-full flex items-center justify-between focus:outline-none"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-amber-100 text-amber-700 rounded-lg">
+                  <Gem className="w-5 h-5" />
                 </div>
-                <input
-                  type="number"
-                  min="0"
-                  step="0.01"
-                  value={goldPrice}
-                  onChange={(e) => setGoldPrice(e.target.value)}
-                  className="block w-full pl-7 pr-3 py-2.5 border border-stone-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-colors"
-                  placeholder="e.g. 65.50"
-                />
+                <h2 className="text-xl font-medium">Gold Assets</h2>
               </div>
-            </div>
+              <div className="text-stone-400 hover:text-stone-600 transition-colors">
+                {isGoldCollapsed ? <ChevronDown className="w-6 h-6" /> : <ChevronUp className="w-6 h-6" />}
+              </div>
+            </button>
 
-            <div className="space-y-4">
-              <h3 className="text-sm font-medium text-stone-700 border-b border-stone-100 pb-2">Enter Gold Amount by Purity</h3>
-              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                {Object.entries(goldPurities).map(([purity, multiplier]) => {
-                  const val = parseFloat(goldGrams[purity]) || 0;
-                  const pureVal = val * multiplier;
-                  return (
-                    <div key={purity} className="bg-stone-50 p-4 rounded-xl border border-stone-100">
-                      <label className="block text-sm font-medium text-stone-700 mb-1">
-                        {purity} Gold (grams)
-                      </label>
-                      <input
-                        type="number"
-                        min="0"
-                        step="0.01"
-                        value={goldGrams[purity] || ''}
-                        onChange={(e) => handleGoldChange(purity, e.target.value)}
-                        className="block w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-colors"
-                        placeholder="0.00"
-                      />
-                      {val > 0 && (
-                        <div className="mt-2 text-xs text-stone-500 flex items-start gap-1.5 bg-white p-2 rounded border border-stone-100">
-                          <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                          <span>
-                            {val}g × {multiplier.toFixed(4)} = <strong className="text-stone-700">{pureVal.toFixed(2)}g</strong> of 24k pure gold
-                          </span>
-                        </div>
-                      )}
+            {!isGoldCollapsed && (
+              <div className="mt-6 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div className="mb-6">
+                  <label className="block text-sm font-medium text-stone-700 mb-2">
+                    24k Gold Price (per gram)
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span className="text-stone-400 sm:text-sm">$</span>
                     </div>
-                  );
-                })}
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={goldPrice}
+                      onChange={(e) => setGoldPrice(e.target.value)}
+                      className="block w-full pl-7 pr-3 py-2.5 border border-stone-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-colors"
+                      placeholder="e.g. 65.50"
+                    />
+                  </div>
+                </div>
+
+                <div className="space-y-4">
+                  <h3 className="text-sm font-medium text-stone-700 border-b border-stone-100 pb-2">Enter Gold Amount by Purity</h3>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    {Object.entries(goldPurities).map(([purity, multiplier]) => {
+                      const val = parseFloat(goldGrams[purity]) || 0;
+                      const pureVal = val * multiplier;
+                      return (
+                        <div key={purity} className="bg-stone-50 p-4 rounded-xl border border-stone-100">
+                          <label className="block text-sm font-medium text-stone-700 mb-1">
+                            {purity} Gold (grams)
+                          </label>
+                          <input
+                            type="number"
+                            min="0"
+                            step="0.01"
+                            value={goldGrams[purity] || ''}
+                            onChange={(e) => handleGoldChange(purity, e.target.value)}
+                            className="block w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-colors"
+                            placeholder="0.00"
+                          />
+                          {val > 0 && (
+                            <div className="mt-2 text-xs text-stone-500 flex items-start gap-1.5 bg-white p-2 rounded border border-stone-100">
+                              <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
+                              <span>
+                                {val}g × {multiplier.toFixed(4)} = <strong className="text-stone-700">{pureVal.toFixed(2)}g</strong> of 24k pure gold
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
               </div>
-            </div>
+            )}
           </section>
 
           {/* Money Section */}
           <section className="bg-white rounded-2xl p-6 shadow-sm border border-stone-200">
-            <div className="flex items-center gap-3 mb-6">
-              <div className="p-2 bg-emerald-100 text-emerald-700 rounded-lg">
-                <Wallet className="w-5 h-5" />
-              </div>
-              <h2 className="text-xl font-medium">Money & Savings</h2>
-            </div>
-
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
-              <div>
-                <label className="block text-sm font-medium text-stone-700 mb-2">
-                  Silver Price (per gram)
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-stone-400 sm:text-sm">$</span>
-                  </div>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={silverPrice}
-                    onChange={(e) => setSilverPrice(e.target.value)}
-                    className="block w-full pl-7 pr-3 py-2.5 border border-stone-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-colors"
-                    placeholder="e.g. 0.85"
-                  />
+            <button 
+              onClick={() => setIsMoneyCollapsed(!isMoneyCollapsed)}
+              className="w-full flex items-center justify-between focus:outline-none"
+            >
+              <div className="flex items-center gap-3">
+                <div className="p-2 bg-emerald-100 text-emerald-700 rounded-lg">
+                  <Wallet className="w-5 h-5" />
                 </div>
-                {parsedSilverPrice > 0 && (
-                  <p className="mt-2 text-xs text-stone-500">
-                    Money Nisaab (612g): <strong className="text-stone-700">{formatCurrency(moneyNisaab)}</strong>
-                  </p>
-                )}
+                <h2 className="text-xl font-medium">Money & Savings</h2>
               </div>
+              <div className="text-stone-400 hover:text-stone-600 transition-colors">
+                {isMoneyCollapsed ? <ChevronDown className="w-6 h-6" /> : <ChevronUp className="w-6 h-6" />}
+              </div>
+            </button>
 
-              <div>
-                <label className="block text-sm font-medium text-stone-700 mb-2">
-                  Money Saved for the Year
-                </label>
-                <div className="relative">
-                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                    <span className="text-stone-400 sm:text-sm">$</span>
+            {!isMoneyCollapsed && (
+              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div>
+                  <label className="block text-sm font-medium text-stone-700 mb-2">
+                    Silver Price (per gram)
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span className="text-stone-400 sm:text-sm">$</span>
+                    </div>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={silverPrice}
+                      onChange={(e) => setSilverPrice(e.target.value)}
+                      className="block w-full pl-7 pr-3 py-2.5 border border-stone-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-colors"
+                      placeholder="e.g. 0.85"
+                    />
                   </div>
-                  <input
-                    type="number"
-                    min="0"
-                    step="0.01"
-                    value={moneySaved}
-                    onChange={(e) => setMoneySaved(e.target.value)}
-                    className="block w-full pl-7 pr-3 py-2.5 border border-stone-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-colors"
-                    placeholder="0.00"
-                  />
+                  {parsedSilverPrice > 0 && (
+                    <p className="mt-2 text-xs text-stone-500">
+                      Money Nisaab (612g): <strong className="text-stone-700">{formatCurrency(moneyNisaab)}</strong>
+                    </p>
+                  )}
+                </div>
+
+                <div>
+                  <label className="block text-sm font-medium text-stone-700 mb-2">
+                    Money Saved for the Year
+                  </label>
+                  <div className="relative">
+                    <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                      <span className="text-stone-400 sm:text-sm">$</span>
+                    </div>
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={moneySaved}
+                      onChange={(e) => setMoneySaved(e.target.value)}
+                      className="block w-full pl-7 pr-3 py-2.5 border border-stone-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-colors"
+                      placeholder="0.00"
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
+            )}
           </section>
 
         </div>
