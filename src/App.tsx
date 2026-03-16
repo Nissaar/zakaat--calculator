@@ -511,12 +511,12 @@ export default function App() {
       {/* Disclaimer Modal */}
       {showDisclaimer && (
         <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-stone-900/60 backdrop-blur-sm">
-          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200">
-            <div className="flex items-center gap-3 mb-4 text-amber-600">
+          <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 animate-in fade-in zoom-in duration-200 flex flex-col max-h-[90vh]">
+            <div className="flex items-center gap-3 mb-4 text-amber-600 shrink-0">
               <AlertTriangle className="w-6 h-6" />
               <h2 className="text-xl font-semibold text-stone-900">Important Advisory</h2>
             </div>
-            <div className="space-y-4 text-stone-600 text-sm leading-relaxed">
+            <div className="space-y-4 text-stone-600 text-sm leading-relaxed overflow-y-auto pr-2 custom-scrollbar">
               <div className="bg-amber-50 text-amber-800 p-3 rounded-lg border border-amber-200">
                 Please note: The calculations and Nisaab benchmarks used in this application are based primarily on the <strong>Hanafi Madhab</strong>.
               </div>
@@ -535,7 +535,7 @@ export default function App() {
             </div>
             <button
               onClick={() => setShowDisclaimer(false)}
-              className="mt-6 w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-2.5 rounded-xl transition-colors"
+              className="mt-6 w-full bg-emerald-700 hover:bg-emerald-800 text-white font-medium py-2.5 rounded-xl transition-colors shrink-0"
             >
               I Understand
             </button>
