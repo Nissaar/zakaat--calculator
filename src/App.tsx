@@ -11,16 +11,9 @@ const goldPurities = {
   '9k': 9 / 24,
 };
 
-const silverPurities = {
-  '999 (Pure)': 0.999,
-  '958 (Britannia)': 0.958,
-  '925 (Sterling)': 0.925,
-  '800 (Jewelry)': 0.800,
-};
-
 export default function App() {
   const [goldGrams, setGoldGrams] = useState<Record<string, string>>({});
-  const [silverGrams, setSilverGrams] = useState<Record<string, string>>({});
+  const [silverGrams, setSilverGrams] = useState<string>('');
   const [goldPrice, setGoldPrice] = useState<string>('');
   const [silverPrice, setSilverPrice] = useState<string>('');
   const [moneySaved, setMoneySaved] = useState<string>('');
@@ -33,25 +26,21 @@ export default function App() {
     setGoldGrams((prev) => ({ ...prev, [purity]: value }));
   };
 
-  const handleSilverChange = (purity: string, value: string) => {
-    setSilverGrams((prev) => ({ ...prev, [purity]: value }));
-  };
-
   const totalPureGoldGrams = Object.entries(goldGrams).reduce((acc, [k, v]) => {
     const grams = parseFloat(v) || 0;
     return acc + grams * goldPurities[k as keyof typeof goldPurities];
   }, 0);
 
+  // Round the total pure gold grams to 2 decimal places to match what the user sees
+  const roundedTotalPureGoldGrams = Math.round(totalPureGoldGrams * 100) / 100;
+
   const parsedGoldPrice = parseFloat(goldPrice) || 0;
-  const monetaryGoldValue = totalPureGoldGrams * parsedGoldPrice;
+  // Use the exact calculated value for monetary value
+  const monetaryGoldValue = roundedTotalPureGoldGrams * parsedGoldPrice;
 
-  const totalPureSilverGrams = Object.entries(silverGrams).reduce((acc, [k, v]) => {
-    const grams = parseFloat(v) || 0;
-    return acc + grams * silverPurities[k as keyof typeof silverPurities];
-  }, 0);
-
+  const totalSilverGrams = parseFloat(silverGrams) || 0;
   const parsedSilverPrice = parseFloat(silverPrice) || 0;
-  const monetarySilverValue = totalPureSilverGrams * parsedSilverPrice;
+  const monetarySilverValue = totalSilverGrams * parsedSilverPrice;
 
   const moneyNisaab = 612 * parsedSilverPrice;
   const moneySavedValue = parseFloat(moneySaved) || 0;
@@ -175,10 +164,10 @@ export default function App() {
             </button>
 
             {!isSilverCollapsed && (
-              <div className="mt-6 animate-in fade-in slide-in-from-top-2 duration-200">
-                <div className="mb-6">
+              <div className="mt-6 grid grid-cols-1 sm:grid-cols-2 gap-6 animate-in fade-in slide-in-from-top-2 duration-200">
+                <div>
                   <label className="block text-sm font-medium text-stone-700 mb-2">
-                    Pure Silver Price (per gram)
+                    925 Silver Price (per gram)
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -196,37 +185,20 @@ export default function App() {
                   </div>
                 </div>
 
-                <div className="space-y-4">
-                  <h3 className="text-sm font-medium text-stone-700 border-b border-stone-100 pb-2">Enter Silver Amount by Purity</h3>
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    {Object.entries(silverPurities).map(([purity, multiplier]) => {
-                      const val = parseFloat(silverGrams[purity]) || 0;
-                      const pureVal = val * multiplier;
-                      return (
-                        <div key={purity} className="bg-stone-50 p-4 rounded-xl border border-stone-100">
-                          <label className="block text-sm font-medium text-stone-700 mb-1">
-                            {purity} (grams)
-                          </label>
-                          <input
-                            type="number"
-                            min="0"
-                            step="0.01"
-                            value={silverGrams[purity] || ''}
-                            onChange={(e) => handleSilverChange(purity, e.target.value)}
-                            className="block w-full px-3 py-2 border border-stone-300 rounded-lg focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-colors"
-                            placeholder="0.00"
-                          />
-                          {val > 0 && (
-                            <div className="mt-2 text-xs text-stone-500 flex items-start gap-1.5 bg-white p-2 rounded border border-stone-100">
-                              <Info className="w-3.5 h-3.5 text-emerald-600 shrink-0 mt-0.5" />
-                              <span>
-                                {val}g × {multiplier.toFixed(3)} = <strong className="text-stone-700">{pureVal.toFixed(2)}g</strong> of pure silver
-                              </span>
-                            </div>
-                          )}
-                        </div>
-                      );
-                    })}
+                <div>
+                  <label className="block text-sm font-medium text-stone-700 mb-2">
+                    925 Silver Amount (grams)
+                  </label>
+                  <div className="relative">
+                    <input
+                      type="number"
+                      min="0"
+                      step="0.01"
+                      value={silverGrams}
+                      onChange={(e) => setSilverGrams(e.target.value)}
+                      className="block w-full px-3 py-2.5 border border-stone-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-colors"
+                      placeholder="0.00"
+                    />
                   </div>
                 </div>
               </div>
@@ -280,7 +252,7 @@ export default function App() {
                 ) : (
                   <div className="text-sm text-amber-700 bg-amber-50 p-3 rounded-lg border border-amber-200 flex items-start gap-2">
                     <AlertTriangle className="w-4 h-4 shrink-0 mt-0.5" />
-                    <p>Please enter the Pure Silver Price in the Silver Assets section to calculate the Money Nisaab.</p>
+                    <p>Please enter the 925 Silver Price in the Silver Assets section to calculate the Money Nisaab.</p>
                   </div>
                 )}
               </div>
@@ -303,27 +275,27 @@ export default function App() {
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
                   <span className="text-stone-300">Total Pure Gold:</span>
-                  <span className="font-mono">{totalPureGoldGrams.toFixed(2)}g</span>
+                  <span className="font-mono">{roundedTotalPureGoldGrams.toFixed(2)}g</span>
                 </div>
-                {parsedGoldPrice > 0 && totalPureGoldGrams > 0 && (
+                {parsedGoldPrice > 0 && roundedTotalPureGoldGrams > 0 && (
                   <div className="flex justify-between text-xs text-stone-400">
-                    <span>Value ({totalPureGoldGrams.toFixed(2)}g × {parsedGoldPrice}):</span>
+                    <span>Value ({roundedTotalPureGoldGrams.toFixed(2)}g × {parsedGoldPrice}):</span>
                     <span className="font-mono">{formatCurrency(monetaryGoldValue)}</span>
                   </div>
                 )}
                 
                 <div className="mt-4 space-y-3">
                   {/* 87g Benchmark */}
-                  <div className={`p-3 rounded-lg ${totalPureGoldGrams >= 87 ? 'bg-emerald-900/40 border border-emerald-800' : 'bg-stone-800/50 border border-stone-700'}`}>
+                  <div className={`p-3 rounded-lg ${roundedTotalPureGoldGrams >= 87 ? 'bg-emerald-900/40 border border-emerald-800' : 'bg-stone-800/50 border border-stone-700'}`}>
                     <div className="flex justify-between items-center mb-1">
                       <span className="font-medium text-emerald-100">87g Benchmark</span>
-                      {totalPureGoldGrams >= 87 ? (
+                      {roundedTotalPureGoldGrams >= 87 ? (
                         <span className="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">Greater than Nisaab</span>
                       ) : (
                         <span className="text-xs bg-stone-700 text-stone-300 px-2 py-0.5 rounded">Less than Nisaab</span>
                       )}
                     </div>
-                    {totalPureGoldGrams >= 87 && parsedGoldPrice > 0 && (
+                    {roundedTotalPureGoldGrams >= 87 && parsedGoldPrice > 0 && (
                       <div className="flex justify-between items-center mt-2 pt-2 border-t border-emerald-800/50">
                         <span className="text-emerald-200/70 text-xs">Zakat (2.5% of value)</span>
                         <span className="font-mono font-medium text-emerald-300">{formatCurrency(monetaryGoldValue * 0.025)}</span>
@@ -332,16 +304,16 @@ export default function App() {
                   </div>
 
                   {/* 93g Benchmark */}
-                  <div className={`p-3 rounded-lg ${totalPureGoldGrams >= 93 ? 'bg-emerald-900/40 border border-emerald-800' : 'bg-stone-800/50 border border-stone-700'}`}>
+                  <div className={`p-3 rounded-lg ${roundedTotalPureGoldGrams >= 93 ? 'bg-emerald-900/40 border border-emerald-800' : 'bg-stone-800/50 border border-stone-700'}`}>
                     <div className="flex justify-between items-center mb-1">
                       <span className="font-medium text-emerald-100">93g Benchmark</span>
-                      {totalPureGoldGrams >= 93 ? (
+                      {roundedTotalPureGoldGrams >= 93 ? (
                         <span className="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">Greater than Nisaab</span>
                       ) : (
                         <span className="text-xs bg-stone-700 text-stone-300 px-2 py-0.5 rounded">Less than Nisaab</span>
                       )}
                     </div>
-                    {totalPureGoldGrams >= 93 && parsedGoldPrice > 0 && (
+                    {roundedTotalPureGoldGrams >= 93 && parsedGoldPrice > 0 && (
                       <div className="flex justify-between items-center mt-2 pt-2 border-t border-emerald-800/50">
                         <span className="text-emerald-200/70 text-xs">Zakat (2.5% of value)</span>
                         <span className="font-mono font-medium text-emerald-300">{formatCurrency(monetaryGoldValue * 0.025)}</span>
@@ -357,28 +329,28 @@ export default function App() {
               <h3 className="text-sm font-medium text-stone-400 uppercase tracking-wider mb-3">Silver Calculation</h3>
               <div className="space-y-2 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-stone-300">Total Pure Silver:</span>
-                  <span className="font-mono">{totalPureSilverGrams.toFixed(2)}g</span>
+                  <span className="text-stone-300">Total 925 Silver:</span>
+                  <span className="font-mono">{totalSilverGrams.toFixed(2)}g</span>
                 </div>
-                {parsedSilverPrice > 0 && totalPureSilverGrams > 0 && (
+                {parsedSilverPrice > 0 && totalSilverGrams > 0 && (
                   <div className="flex justify-between text-xs text-stone-400">
-                    <span>Value ({totalPureSilverGrams.toFixed(2)}g × {parsedSilverPrice}):</span>
+                    <span>Value ({totalSilverGrams.toFixed(2)}g × {parsedSilverPrice}):</span>
                     <span className="font-mono">{formatCurrency(monetarySilverValue)}</span>
                   </div>
                 )}
                 
                 <div className="mt-4 space-y-3">
                   {/* 612g Benchmark */}
-                  <div className={`p-3 rounded-lg ${totalPureSilverGrams >= 612 ? 'bg-emerald-900/40 border border-emerald-800' : 'bg-stone-800/50 border border-stone-700'}`}>
+                  <div className={`p-3 rounded-lg ${totalSilverGrams >= 612 ? 'bg-emerald-900/40 border border-emerald-800' : 'bg-stone-800/50 border border-stone-700'}`}>
                     <div className="flex justify-between items-center mb-1">
                       <span className="font-medium text-emerald-100">612g Benchmark</span>
-                      {totalPureSilverGrams >= 612 ? (
+                      {totalSilverGrams >= 612 ? (
                         <span className="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">Greater than Nisaab</span>
                       ) : (
                         <span className="text-xs bg-stone-700 text-stone-300 px-2 py-0.5 rounded">Less than Nisaab</span>
                       )}
                     </div>
-                    {totalPureSilverGrams >= 612 && parsedSilverPrice > 0 && (
+                    {totalSilverGrams >= 612 && parsedSilverPrice > 0 && (
                       <div className="flex justify-between items-center mt-2 pt-2 border-t border-emerald-800/50">
                         <span className="text-emerald-200/70 text-xs">Zakat (2.5% of value)</span>
                         <span className="font-mono font-medium text-emerald-300">{formatCurrency(monetarySilverValue * 0.025)}</span>
@@ -423,6 +395,20 @@ export default function App() {
             <div>
               <h3 className="text-sm font-medium text-stone-400 uppercase tracking-wider mb-3">Combined Assets (Gold + Silver + Money)</h3>
               <div className="bg-stone-800 rounded-xl p-4 border border-stone-700">
+                <div className="space-y-2 mb-4 pb-4 border-b border-stone-700 text-sm">
+                  <div className="flex justify-between">
+                    <span className="text-stone-400">Gold Value:</span>
+                    <span className="font-mono text-stone-300">{formatCurrency(monetaryGoldValue)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-stone-400">Silver Value:</span>
+                    <span className="font-mono text-stone-300">{formatCurrency(monetarySilverValue)}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-stone-400">Money Saved:</span>
+                    <span className="font-mono text-stone-300">{formatCurrency(moneySavedValue)}</span>
+                  </div>
+                </div>
                 <div className="flex justify-between items-center mb-3">
                   <span className="text-stone-300">Total Assets Value:</span>
                   <span className="font-mono text-lg">{formatCurrency(totalAssets)}</span>
