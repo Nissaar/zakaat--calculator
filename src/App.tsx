@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Calculator, Coins, CircleDollarSign, Info, Scale, Wallet, Gem, AlertTriangle, ChevronDown, ChevronUp } from 'lucide-react';
+import React, { useState, useRef } from 'react';
+import { Calculator, Coins, CircleDollarSign, Info, Scale, Wallet, Gem, AlertTriangle, ChevronDown, ChevronUp, ArrowDown } from 'lucide-react';
 
 const goldPurities = {
   '24k': 1,
@@ -22,6 +22,12 @@ export default function App() {
   const [isSilverCollapsed, setIsSilverCollapsed] = useState<boolean>(true);
   const [isMoneyCollapsed, setIsMoneyCollapsed] = useState<boolean>(true);
 
+  const summaryRef = useRef<HTMLDivElement>(null);
+
+  const scrollToSummary = () => {
+    summaryRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
+
   const handleGoldChange = (purity: string, value: string) => {
     setGoldGrams((prev) => ({ ...prev, [purity]: value }));
   };
@@ -42,7 +48,8 @@ export default function App() {
   const parsedSilverPrice = parseFloat(silverPrice) || 0;
   const monetarySilverValue = totalSilverGrams * parsedSilverPrice;
 
-  const moneyNisaab = 612 * parsedSilverPrice;
+  const moneyNisaab612 = 612 * parsedSilverPrice;
+  const moneyNisaab653 = 653 * parsedSilverPrice;
   const moneySavedValue = parseFloat(moneySaved) || 0;
 
   const totalAssets = monetaryGoldValue + monetarySilverValue + moneySavedValue;
@@ -247,7 +254,7 @@ export default function App() {
                 {parsedSilverPrice > 0 ? (
                   <div className="text-sm text-stone-600 bg-stone-50 p-3 rounded-lg border border-stone-100 flex items-start gap-2">
                     <Info className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
-                    <p>Money Nisaab (612g of silver) is currently valued at <strong>{formatCurrency(moneyNisaab)}</strong>.</p>
+                    <p>Money Nisaab based on silver is currently valued at <strong>{formatCurrency(moneyNisaab612)}</strong> (612g) or <strong>{formatCurrency(moneyNisaab653)}</strong> (653g).</p>
                   </div>
                 ) : (
                   <div className="text-sm text-amber-700 bg-amber-50 p-3 rounded-lg border border-amber-200 flex items-start gap-2">
@@ -262,7 +269,7 @@ export default function App() {
         </div>
 
         {/* Results Section */}
-        <div className="lg:col-span-5 space-y-6">
+        <div className="lg:col-span-5 space-y-6" ref={summaryRef}>
           <div className="bg-stone-900 text-white rounded-2xl p-6 shadow-lg sticky top-6">
             <h2 className="text-xl font-medium mb-6 flex items-center gap-2">
               <Scale className="w-5 h-5 text-emerald-400" />
@@ -357,6 +364,24 @@ export default function App() {
                       </div>
                     )}
                   </div>
+
+                  {/* 653g Benchmark */}
+                  <div className={`p-3 rounded-lg ${totalSilverGrams >= 653 ? 'bg-emerald-900/40 border border-emerald-800' : 'bg-stone-800/50 border border-stone-700'}`}>
+                    <div className="flex justify-between items-center mb-1">
+                      <span className="font-medium text-emerald-100">653g Benchmark</span>
+                      {totalSilverGrams >= 653 ? (
+                        <span className="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">Greater than Nisaab</span>
+                      ) : (
+                        <span className="text-xs bg-stone-700 text-stone-300 px-2 py-0.5 rounded">Less than Nisaab</span>
+                      )}
+                    </div>
+                    {totalSilverGrams >= 653 && parsedSilverPrice > 0 && (
+                      <div className="flex justify-between items-center mt-2 pt-2 border-t border-emerald-800/50">
+                        <span className="text-emerald-200/70 text-xs">Zakat (2.5% of value)</span>
+                        <span className="font-mono font-medium text-emerald-300">{formatCurrency(monetarySilverValue * 0.025)}</span>
+                      </div>
+                    )}
+                  </div>
                 </div>
               </div>
             </div>
@@ -371,21 +396,42 @@ export default function App() {
                 </div>
                 
                 {parsedSilverPrice > 0 && (
-                  <div className={`mt-3 p-3 rounded-lg ${moneySavedValue >= moneyNisaab ? 'bg-emerald-900/40 border border-emerald-800' : 'bg-stone-800/50 border border-stone-700'}`}>
-                    <div className="flex justify-between items-center mb-1">
-                      <span className="font-medium text-emerald-100">Money Nisaab</span>
-                      {moneySavedValue >= moneyNisaab ? (
-                        <span className="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">Greater than Nisaab</span>
-                      ) : (
-                        <span className="text-xs bg-stone-700 text-stone-300 px-2 py-0.5 rounded">Less than Nisaab</span>
+                  <div className="mt-4 space-y-3">
+                    {/* 612g Benchmark */}
+                    <div className={`p-3 rounded-lg ${moneySavedValue >= moneyNisaab612 ? 'bg-emerald-900/40 border border-emerald-800' : 'bg-stone-800/50 border border-stone-700'}`}>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="font-medium text-emerald-100">612g Benchmark ({formatCurrency(moneyNisaab612)})</span>
+                        {moneySavedValue >= moneyNisaab612 ? (
+                          <span className="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">Greater than Nisaab</span>
+                        ) : (
+                          <span className="text-xs bg-stone-700 text-stone-300 px-2 py-0.5 rounded">Less than Nisaab</span>
+                        )}
+                      </div>
+                      {moneySavedValue >= moneyNisaab612 && (
+                        <div className="flex justify-between items-center mt-2 pt-2 border-t border-emerald-800/50">
+                          <span className="text-emerald-200/70 text-xs">Zakat (2.5% of saved)</span>
+                          <span className="font-mono font-medium text-emerald-300">{formatCurrency(moneySavedValue * 0.025)}</span>
+                        </div>
                       )}
                     </div>
-                    {moneySavedValue >= moneyNisaab && (
-                      <div className="flex justify-between items-center mt-2 pt-2 border-t border-emerald-800/50">
-                        <span className="text-emerald-200/70 text-xs">Zakat (2.5% of saved)</span>
-                        <span className="font-mono font-medium text-emerald-300">{formatCurrency(moneySavedValue * 0.025)}</span>
+
+                    {/* 653g Benchmark */}
+                    <div className={`p-3 rounded-lg ${moneySavedValue >= moneyNisaab653 ? 'bg-emerald-900/40 border border-emerald-800' : 'bg-stone-800/50 border border-stone-700'}`}>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="font-medium text-emerald-100">653g Benchmark ({formatCurrency(moneyNisaab653)})</span>
+                        {moneySavedValue >= moneyNisaab653 ? (
+                          <span className="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">Greater than Nisaab</span>
+                        ) : (
+                          <span className="text-xs bg-stone-700 text-stone-300 px-2 py-0.5 rounded">Less than Nisaab</span>
+                        )}
                       </div>
-                    )}
+                      {moneySavedValue >= moneyNisaab653 && (
+                        <div className="flex justify-between items-center mt-2 pt-2 border-t border-emerald-800/50">
+                          <span className="text-emerald-200/70 text-xs">Zakat (2.5% of saved)</span>
+                          <span className="font-mono font-medium text-emerald-300">{formatCurrency(moneySavedValue * 0.025)}</span>
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
@@ -415,23 +461,43 @@ export default function App() {
                 </div>
 
                 {parsedSilverPrice > 0 ? (
-                  totalAssets >= moneyNisaab ? (
-                    <div className="space-y-3">
-                      <div className="bg-emerald-500/10 text-emerald-300 text-sm p-2.5 rounded-lg border border-emerald-500/20 flex items-start gap-2">
-                        <Info className="w-4 h-4 shrink-0 mt-0.5" />
-                        <p>Above Nisaab ({formatCurrency(moneyNisaab)}). Zakat is obligatory on combined assets.</p>
+                  <div className="space-y-3">
+                    {/* 612g Benchmark */}
+                    <div className={`p-3 rounded-lg ${totalAssets >= moneyNisaab612 ? 'bg-emerald-900/40 border border-emerald-800' : 'bg-stone-800/50 border border-stone-700'}`}>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="font-medium text-emerald-100">612g Benchmark ({formatCurrency(moneyNisaab612)})</span>
+                        {totalAssets >= moneyNisaab612 ? (
+                          <span className="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">Greater than Nisaab</span>
+                        ) : (
+                          <span className="text-xs bg-stone-700 text-stone-300 px-2 py-0.5 rounded">Less than Nisaab</span>
+                        )}
                       </div>
-                      <div className="flex justify-between items-center pt-3 border-t border-stone-700">
-                        <span className="font-medium text-white">Total Zakat (2.5%)</span>
-                        <span className="font-mono text-xl font-semibold text-emerald-400">{formatCurrency(combinedZakat)}</span>
+                      {totalAssets >= moneyNisaab612 && (
+                        <div className="flex justify-between items-center mt-2 pt-2 border-t border-emerald-800/50">
+                          <span className="text-emerald-200/70 text-xs">Total Zakat (2.5%)</span>
+                          <span className="font-mono font-medium text-emerald-300">{formatCurrency(combinedZakat)}</span>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* 653g Benchmark */}
+                    <div className={`p-3 rounded-lg ${totalAssets >= moneyNisaab653 ? 'bg-emerald-900/40 border border-emerald-800' : 'bg-stone-800/50 border border-stone-700'}`}>
+                      <div className="flex justify-between items-center mb-1">
+                        <span className="font-medium text-emerald-100">653g Benchmark ({formatCurrency(moneyNisaab653)})</span>
+                        {totalAssets >= moneyNisaab653 ? (
+                          <span className="text-xs bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded">Greater than Nisaab</span>
+                        ) : (
+                          <span className="text-xs bg-stone-700 text-stone-300 px-2 py-0.5 rounded">Less than Nisaab</span>
+                        )}
                       </div>
+                      {totalAssets >= moneyNisaab653 && (
+                        <div className="flex justify-between items-center mt-2 pt-2 border-t border-emerald-800/50">
+                          <span className="text-emerald-200/70 text-xs">Total Zakat (2.5%)</span>
+                          <span className="font-mono font-medium text-emerald-300">{formatCurrency(combinedZakat)}</span>
+                        </div>
+                      )}
                     </div>
-                  ) : (
-                    <div className="bg-stone-700/50 text-stone-300 text-sm p-2.5 rounded-lg flex items-start gap-2">
-                      <Info className="w-4 h-4 shrink-0 mt-0.5" />
-                      <p>Combined assets are less than the Money Nisaab ({formatCurrency(moneyNisaab)}). No Zakat obligatory on combined assets.</p>
-                    </div>
-                  )
+                  </div>
                 ) : (
                   <div className="text-xs text-stone-500 italic">
                     Enter Silver Price to calculate combined Nisaab.
@@ -528,6 +594,16 @@ export default function App() {
           </div>
         </div>
       )}
+
+      {/* Floating Scroll to Summary Button */}
+      <button
+        onClick={scrollToSummary}
+        className="fixed bottom-6 right-6 z-50 bg-emerald-600 hover:bg-emerald-700 text-white px-4 py-3 rounded-full shadow-xl flex items-center gap-2 transition-transform hover:scale-105 active:scale-95 lg:hidden"
+        aria-label="Scroll to Zakat Summary"
+      >
+        <ArrowDown className="w-5 h-5" />
+        <span className="font-medium text-sm">Summary</span>
+      </button>
     </div>
   );
 }
