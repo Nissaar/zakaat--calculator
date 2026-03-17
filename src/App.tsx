@@ -56,9 +56,7 @@ export default function App() {
   const combinedZakat = totalAssets * 0.025;
 
   const formatCurrency = (val: number) =>
-    new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
-      .format(val)
-      .replace('$', ''); // Removing $ to keep it generic or user can assume their local currency
+    `Rs ${new Intl.NumberFormat('en-MU', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(val)}`;
 
   return (
     <div className="min-h-screen bg-stone-50 text-stone-900 font-sans pb-20">
@@ -102,7 +100,7 @@ export default function App() {
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span className="text-stone-400 sm:text-sm">$</span>
+                      <span className="text-stone-400 sm:text-sm">Rs</span>
                     </div>
                     <input
                       type="number"
@@ -110,8 +108,8 @@ export default function App() {
                       step="0.01"
                       value={goldPrice}
                       onChange={(e) => setGoldPrice(e.target.value)}
-                      className="block w-full pl-7 pr-3 py-2.5 border border-stone-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-colors"
-                      placeholder="e.g. 65.50"
+                      className="block w-full pl-8 pr-3 py-2.5 border border-stone-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-colors"
+                      placeholder="e.g. 3500.50"
                     />
                   </div>
                 </div>
@@ -178,7 +176,7 @@ export default function App() {
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span className="text-stone-400 sm:text-sm">$</span>
+                      <span className="text-stone-400 sm:text-sm">Rs</span>
                     </div>
                     <input
                       type="number"
@@ -186,8 +184,8 @@ export default function App() {
                       step="0.01"
                       value={silverPrice}
                       onChange={(e) => setSilverPrice(e.target.value)}
-                      className="block w-full pl-7 pr-3 py-2.5 border border-stone-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-colors"
-                      placeholder="e.g. 0.85"
+                      className="block w-full pl-8 pr-3 py-2.5 border border-stone-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-colors"
+                      placeholder="e.g. 45.85"
                     />
                   </div>
                 </div>
@@ -237,7 +235,7 @@ export default function App() {
                   </label>
                   <div className="relative">
                     <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                      <span className="text-stone-400 sm:text-sm">$</span>
+                      <span className="text-stone-400 sm:text-sm">Rs</span>
                     </div>
                     <input
                       type="number"
@@ -245,7 +243,7 @@ export default function App() {
                       step="0.01"
                       value={moneySaved}
                       onChange={(e) => setMoneySaved(e.target.value)}
-                      className="block w-full pl-7 pr-3 py-2.5 border border-stone-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-colors"
+                      className="block w-full pl-8 pr-3 py-2.5 border border-stone-300 rounded-xl focus:ring-emerald-500 focus:border-emerald-500 sm:text-sm transition-colors"
                       placeholder="0.00"
                     />
                   </div>
