@@ -3,6 +3,9 @@
   "extends": [
     "config:recommended"
   ],
+  "constraints": {
+    "npm": "^10"
+  },
   "timezone": "Indian/Mauritius",
   "schedule": [
     "before 7am on monday"
