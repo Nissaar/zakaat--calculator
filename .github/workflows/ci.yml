@@ -12,10 +12,20 @@ jobs:
       contents: read
     steps:
       - uses: actions/checkout@v7
-      - uses: actions/setup-node@v4
+      - uses: actions/setup-node@v7
         with:
-          node-version: 22
+          node-version: 24
           cache: npm
       - run: npm ci --no-audit --no-fund
       - run: npm run lint
       - run: npm run build
+
+  # The image is what actually ships; without this a Dockerfile or base-image bump
+  # (node, nginx) passes CI without ever being built.
+  docker:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v7
+      - run: docker build -t zakaat-calculator:ci .
