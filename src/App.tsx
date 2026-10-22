@@ -32,7 +32,7 @@ export default function App() {
     setGoldGrams((prev) => ({ ...prev, [purity]: value }));
   };
 
-  const totalPureGoldGrams = Object.entries(goldGrams).reduce((acc, [k, v]) => {
+  const totalPureGoldGrams = Object.entries<string>(goldGrams).reduce((acc, [k, v]) => {
     const grams = parseFloat(v) || 0;
     return acc + grams * goldPurities[k as keyof typeof goldPurities];
   }, 0);

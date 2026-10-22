@@ -6,8 +6,8 @@ WORKDIR /app
 # Copy package.json and package-lock.json (if available)
 COPY package*.json ./
 
-# Install dependencies (using the latest compatible versions from package.json)
-RUN npm install
+# Install exactly what package-lock.json pins (reproducible; dependabot bumps the lock)
+RUN npm ci --no-audit --no-fund
 
 # Copy the rest of the application code
 COPY . .
