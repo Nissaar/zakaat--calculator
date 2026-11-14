@@ -1,0 +1,9 @@
+/*
+  X-Content-Type-Options: nosniff
+  Referrer-Policy: strict-origin-when-cross-origin
+  X-Frame-Options: DENY
+  Permissions-Policy: camera=(), microphone=(), geolocation=()
+
+# the PWA's service worker must always be re-checked, or an update never reaches the visitor
+/sw.js
+  Cache-Control: no-cache
