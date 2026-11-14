@@ -1,6 +1,6 @@
 name: Deploy to Cloudflare Pages
 
-# main            -> production (zakaat-calculator.pages.dev, and zakaat.info once the name points there)
+# main            -> production (zakaat-info.pages.dev, and zakaat.info once the name points there)
 # pull request    -> a preview address for that branch (same-repo PRs only: a fork never gets the token)
 on:
   push:
@@ -31,14 +31,14 @@ jobs:
       - run: npm run lint
       - run: npm run build
       - name: Deploy
+        shell: bash   # bash adds pipefail: a failed deploy must not be hidden by the tee below
         env:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ vars.CLOUDFLARE_ACCOUNT_ID }}
           BRANCH: ${{ github.head_ref || github.ref_name }}
         run: |
-          # Create the project the first time (harmless when it exists).
-          npx --yes wrangler@4 pages project create zakaat-calculator --production-branch main || echo "project exists or could not be created: the deploy below says which"
-          npx --yes wrangler@4 pages deploy dist --project-name zakaat-calculator --branch "$BRANCH" --commit-message "$GITHUB_SHA" 2>&1 | tee deploy.log
+          # The project "zakaat-info" already exists (created once by hand: the name "zakaat-calculator" is taken on pages.dev).
+          npx --yes wrangler@4 pages deploy dist --project-name zakaat-info --branch "$BRANCH" --commit-message "$GITHUB_SHA" 2>&1 | tee deploy.log
           url=$(grep -Eo 'https://[a-z0-9.-]+\.pages\.dev' deploy.log | tail -1)
           echo "### Cloudflare Pages" >> "$GITHUB_STEP_SUMMARY"
           echo "Deployed: $url" >> "$GITHUB_STEP_SUMMARY"
